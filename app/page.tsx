@@ -5,11 +5,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { UploadCloud, MessageSquare, Loader2 } from 'lucide-react';
-import { useState, useRef, ChangeEvent, FormEvent } from 'react';
+import { UploadCloud, MessageSquare, Loader2, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+import { useState, useRef, ChangeEvent, FormEvent, useEffect } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { v4 as uuidv4 } from 'uuid';
+import { useSpeechToText } from '../hooks/useSpeechToText';
+import { useTextToSpeech } from '../hooks/useTextToSpeech';
 
 export default function Dashboard() {
   const subjects = useNotesStore((state) => state.subjects);
@@ -17,6 +19,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState(subjects[0]?.id || 'physics');
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const prevLoadingRef = useRef(false);
 
   const activeSubject = subjects.find(s => s.id === activeTab) || subjects[0];
 
@@ -54,6 +57,31 @@ export default function Dashboard() {
     if (isLoading) return;
     sendMessage({ text: msg.content });
   };
+
+  // --- Voice Hooks ---
+  const { speak, stop: stopSpeaking, isSpeaking, isMuted, toggleMute } = useTextToSpeech();
+
+  const { isListening, toggleListening } = useSpeechToText((text) => {
+    if (append) {
+      append({ role: 'user', content: text });
+    }
+  });
+
+  // --- TTS: auto-speak last AI answer when response finishes ---
+  useEffect(() => {
+    const wasLoading = prevLoadingRef.current;
+    prevLoadingRef.current = isLoading;
+    if (wasLoading && !isLoading) {
+      const lastMsg = messages[messages.length - 1];
+      if (lastMsg?.role === 'assistant') {
+        const rawText = (lastMsg.parts || [])
+          .filter((p: any) => p.type === 'text')
+          .map((p: any) => p.text)
+          .join('');
+        speak(rawText);
+      }
+    }
+  }, [isLoading, messages, speak]);
 
   const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -186,10 +214,27 @@ export default function Dashboard() {
               <div className="lg:col-span-2">
                 <Card className="bg-zinc-900 border-zinc-800 text-white shadow-xl h-[600px] flex flex-col">
                   <CardHeader className="border-b border-zinc-800 pb-4">
-                    <CardTitle className="flex items-center gap-2">
-                      <MessageSquare className="w-5 h-5 text-purple-400" />
-                      Chat with {activeSubject.name} Context
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <MessageSquare className="w-5 h-5 text-purple-400" />
+                        Chat with {activeSubject.name} Context
+                      </CardTitle>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isSpeaking) stopSpeaking();
+                          toggleMute();
+                        }}
+                        title={isMuted ? 'Voice Off — click to enable' : 'Voice On — click to mute'}
+                        className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${!isMuted
+                          ? 'bg-purple-600 text-white hover:bg-purple-700'
+                          : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                          }`}
+                      >
+                        {!isMuted ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+                        {!isMuted ? 'Voice On' : 'Voice Off'}
+                      </button>
+                    </div>
                     <CardDescription className="text-zinc-400">
                       Ask questions about the uploaded notes. The AI responds strictly based on context.
                     </CardDescription>
@@ -277,6 +322,14 @@ export default function Dashboard() {
                           className="rounded-md bg-purple-600 px-6 py-3 font-semibold text-white hover:bg-purple-700 disabled:opacity-50"
                         >
                           Send
+                        </button>
+                        <button
+                          type="button"
+                          onClick={toggleListening}
+                          className={`p-3 rounded-md transition-colors ${isListening ? 'bg-red-500 animate-pulse text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white'}`}
+                          title="Click to speak"
+                        >
+                          🎤
                         </button>
                       </form>
                     </div>
