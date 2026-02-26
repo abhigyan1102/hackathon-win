@@ -1,0 +1,27 @@
+
+> hackathon@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.21.66:3000
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 363ms
+ GET / 200 in 434ms (compile: 348ms, render: 86ms)
+ GET / 200 in 28ms (compile: 1150µs, render: 27ms)
+API Route Hit {
+  messages: [ { role: 'user', content: 'What is the capital of France?' } ],
+  context: 'The capital of France is Paris.'
+}
+Chat AI Route Error: TypeError: result.toDataStreamResponse is not a function
+    at POST (app/api/chat/route.ts:37:23)
+  35 |         });
+  36 |
+> 37 |         return result.toDataStreamResponse();
+     |                       ^
+  38 |     } catch (error: any) {
+  39 |         console.error('Chat AI Route Error:', error);
+  40 |         return new Response(
+ POST /api/chat 500 in 194ms (compile: 140ms, render: 53ms)

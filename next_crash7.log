@@ -1,0 +1,23 @@
+
+> hackathon@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.21.66:3000
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 352ms
+ GET / 200 in 360ms (compile: 263ms, render: 97ms)
+ GET / 200 in 40ms (compile: 1113µs, render: 38ms)
+API Route Hit {
+  messages: [ { role: 'user', content: 'What is the capital of France?' } ],
+  context: 'The capital of France is Paris.'
+}
+⨯ Error: failed to pipe response
+    at ignore-listed frames {
+  [cause]: Error: Unhandled chunk type: stream-start
+      at ignore-listed frames
+}
+ POST /api/chat 500 in 15.1s (compile: 57ms, render: 15.1s)

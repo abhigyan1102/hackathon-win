@@ -1,0 +1,66 @@
+
+> hackathon@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.21.66:3000
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 394ms
+ GET / 200 in 524ms (compile: 444ms, render: 79ms)
+API Route Hit {
+  messages: [ { role: 'user', content: 'What is the capital of France?' } ],
+  context: 'The capital of France is Paris.'
+}
+Before streamText call
+After streamText call. Generating response stream...
+Generated response stream successfully.
+⨯ Error: failed to pipe response
+    at ignore-listed frames {
+  [cause]: Error [AI_APICallError]: models/gemini-1.5-pro-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+      at ignore-listed frames {
+    cause: undefined,
+    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:streamGenerateContent?alt=sse',
+    requestBodyValues: {
+      generationConfig: [Object],
+      contents: [Array],
+      systemInstruction: [Object],
+      safetySettings: undefined,
+      tools: undefined,
+      toolConfig: undefined,
+      cachedContent: undefined,
+      labels: undefined
+    },
+    statusCode: 404,
+    responseHeaders: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-length': '270',
+      'content-type': 'text/event-stream',
+      date: 'Thu, 26 Feb 2026 11:18:21 GMT',
+      server: 'scaffolding on HTTPServer2',
+      'server-timing': 'gfet4t7; dur=111',
+      vary: 'Origin, X-Origin, Referer',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    responseBody: '{\n' +
+      '  "error": {\n' +
+      '    "code": 404,\n' +
+      '    "message": "models/gemini-1.5-pro-latest is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",\n' +
+      '    "status": "NOT_FOUND"\n' +
+      '  }\n' +
+      '}\n',
+    isRetryable: false,
+    data: { error: [Object] }
+  }
+}
+ POST /api/chat 500 in 312ms (compile: 57ms, render: 255ms)
+API Route Hit {
+  messages: [ { role: 'user', content: 'What is the capital of France?' } ],
+  context: 'The capital of France is Paris.'
+}
+Before streamText call
+After streamText call. Awaiting full text to debug unhandled rejections...
